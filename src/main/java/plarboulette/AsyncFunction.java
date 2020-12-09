@@ -7,29 +7,27 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class AsyncFunction implements Function<String, String> {
+public class AsyncFunction implements Function<String, CompletableFuture<String>> {
 
     @Override
-    public String process(String s, Context context) throws Exception {
-       String toReturn;
-        if (s.startsWith("Call")) {
-            toReturn = fakeAsyncFunction();
-        } else {
-            toReturn =  "Ok, I wait";
-        }
-        return toReturn;
+    public CompletableFuture<String> process(String s, Context context) throws Exception {
+        return fakeAsyncFunction();
     }
 
-    public String fakeAsyncFunction () throws IOException, ExecutionException, InterruptedException {
+    public CompletableFuture<String> fakeAsyncFunction () throws IOException, ExecutionException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         var request = HttpRequest.newBuilder(
                 URI.create("https://jsonplaceholder.typicode.com/todos/1"))
                 .GET()
                 .build();
-        var responseFuture = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-        var response =  responseFuture.get(); //Oh we love Java :)
-        return response.body();
+        CompletableFuture<HttpResponse<String>> response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        CompletableFuture<String> str = response.thenApplyAsync(
+                HttpResponse::body
+        );
+
+        return str;
     }
 }
