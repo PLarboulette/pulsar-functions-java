@@ -26,9 +26,12 @@ I prefer the first option because I will use some other tools of the Pulsar dist
 You can find the different Pulsar functions in the `src/main/java` folder. 
 
 - The  `HelloWorldFunction` is an amazing function which say "Goodbye X" when we produce a "Hello X". 
+- The `AsyncFunction` is a little function which call an external API to get random data. Here, I just want to test the possibility to get data of a service and to create an enriched topic. 
 
 
 ## How tou launch the function CountHelloFunction
+
+WARNING : Go to pom.xml file and change the line to :` <mainClass>plarboulette.HelloWorldFunction</mainClass>`
 
 - First we have to generate the JAR
 - After that, we send the JAR to the Pulsar Admin functions tool. You can find these two first steps in the script `launch.sh` located in the `scripts` folder. 
@@ -56,4 +59,26 @@ You will have in the Pulsar function terminal a return like this :
 ``` 
 ----- got message -----
 key:[null], properties:[__pfn_input_msg_id__=CLkBEAAgAA==, __pfn_input_topic__=persistent://sample/standalone/ns1/hello-input], content:Goodbye Barney
+```
+
+## How to launch the function AsyncFunction 
+
+WARNING : Go to pom.xml file and change the line to :` <mainClass>plarboulette.AsyncFunction</mainClass>`
+
+- Launch the script `launch-async.sh`
+- Launch the script `consumer-async.sh`
+- Launch the script `producer-async.sh`
+
+FYI: I change just topic names, the className, and the event I send to the topic :) 
+
+The consumer terminal wil print a message like this. (The API I use to create fake async HTTP requests send random data)
+
+``` 
+----- got message -----
+key:[null], properties:[__pfn_input_msg_id__=CNoKEAAgAA==, __pfn_input_topic__=persistent://sample/standalone/ns1/async-input], content:{
+  "userId": 1,
+  "id": 1,
+  "title": "delectus aut autem",
+  "completed": false
+}
 ```
